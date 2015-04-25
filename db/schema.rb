@@ -11,13 +11,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150425083450) do
+ActiveRecord::Schema.define(version: 20150425182100) do
+
+  create_table "courses", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "plans", force: :cascade do |t|
     t.string   "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer  "user_id"
   end
+
+  create_table "term_courses", force: :cascade do |t|
+    t.integer  "term_id"
+    t.integer  "course_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "term_courses", ["course_id"], name: "index_term_courses_on_course_id"
+  add_index "term_courses", ["term_id"], name: "index_term_courses_on_term_id"
+
+  create_table "terms", force: :cascade do |t|
+    t.integer  "plan_id"
+    t.string   "semester"
+    t.integer  "year"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "terms", ["plan_id"], name: "index_terms_on_plan_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
@@ -33,6 +60,7 @@ ActiveRecord::Schema.define(version: 20150425083450) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "login"
+    t.integer  "is_admin",               default: 0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true

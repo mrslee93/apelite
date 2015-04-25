@@ -5,5 +5,12 @@
   <%= @plan.name %>
 </p>
 
+<% @plan.terms.each do |term| %>
+	<p><%= term.semester + " " + term.year.to_s %></p>
+	<% term.courses.each do |course| %>
+		<p><%= course.name %></p>
+	<% end %>
+<% end %>
+
 <%= link_to 'Edit', edit_plan_path(@plan) %> |
 <%= link_to 'Back', plans_path %>
