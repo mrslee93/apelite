@@ -1,5 +1,5 @@
 class PlansController < ApplicationController
-  before_action :set_plan, only: [:show, :edit, :update, :destroy]
+  before_action :set_plan, only: [:show, :edit, :update, :destroy, :duplicate]
   before_action :authenticate_user!
 
   # GET /plans
@@ -27,6 +27,7 @@ class PlansController < ApplicationController
   def create
     @plan = Plan.new(plan_params)
     @plan.user_id = current_user.id
+
     respond_to do |format|
       if @plan.save
         format.html { redirect_to @plan, notice: 'Plan was successfully created.' }
@@ -35,6 +36,31 @@ class PlansController < ApplicationController
         format.html { render :new }
         format.json { render json: @plan.errors, status: :unprocessable_entity }
       end
+    end
+
+    # Create terms
+    term_start = @plan.start_term.split(' ')
+    term = term_start.first
+    year = term_start.last.to_i
+
+    for i in 0..11
+      if term == "Fall"
+        term1 = Term.create(plan_id: @plan.id, semester: term, year: year)
+        term = "Spring"
+        year = year + 1
+        courses = Course.all
+        courses.each do |course|
+          term1.courses << course
+        end
+        term1.save
+      elsif term == "Spring"
+        Term.create(plan_id: @plan.id, semester: term, year: year)
+        term = "Summer"
+      else
+        Term.create(plan_id: @plan.id, semester: term, year: year)
+        term = "Fall"
+      end
+
     end
   end
 
@@ -62,6 +88,22 @@ class PlansController < ApplicationController
     end
   end
 
+  def duplicate
+    plan1 = @plan.dup
+    @plan.terms.each do |term|
+      term1 = term.dup
+      term.courses.each do |course|
+        term1.courses << course 
+      end
+      plan1.terms << term1
+    end
+    plan1.save
+    respond_to do |format|
+      format.html { redirect_to plans_url, notice: 'Plan was successfully duplicated.' }
+      format.json { head :no_content }
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_plan
@@ -70,6 +112,6 @@ class PlansController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def plan_params
-      params.require(:plan).permit(:name, :user_id)
+      params.require(:plan).permit(:name, :user_id, :start_term)
     end
 end

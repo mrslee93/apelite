@@ -25,17 +25,20 @@ user3.login = "admin"
 user3.email = "admin@somewhere.com"
 user3.password = "password"
 user3.password_confirmation = "password"
+user3.is_admin = 1
 user3.save!
 
 # give peterso some plans
 plan1 = Plan.new
 plan1.user_id = user1.id
 plan1.name = "Plan1"
+plan1.start_term = "Fall 2015"
 plan1.save!
 
 plan2 = Plan.new
 plan2.user_id = user1.id
 plan2.name = "Plan2"
+plan2.start_term = "Spring 2015"
 plan2.save!
 
 # Add course

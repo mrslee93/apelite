@@ -8,7 +8,7 @@
 <% @plan.terms.each do |term| %>
 	<p><%= term.semester + " " + term.year.to_s %></p>
 	<% term.courses.each do |course| %>
-		<p><%= course.name %></p>
+		<p style="padding-left:20px"><%= course.name %></p>
 	<% end %>
 <% end %>
 
